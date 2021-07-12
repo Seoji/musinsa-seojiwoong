@@ -6,7 +6,7 @@
 3. MySql5
 
 ## 빌드
-* Gradle 을 통한 빌드 (./gradlew build)
+* Gradle 을 통한 빌드 (./gradlew assemble)
 
 ## 실행
 * java -jar ./build/libs/musinsa-1.0.jar --spring.profiles.active=local
