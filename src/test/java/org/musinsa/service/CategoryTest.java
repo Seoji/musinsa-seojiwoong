@@ -5,12 +5,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.musinsa.config.exception.GeneralException;
+import org.musinsa.model.dao.category.CategoryAdminRepository;
 import org.musinsa.model.dto.category.CategoryDto;
 import org.musinsa.service.category.CategoryImpl;
 import org.musinsa.model.dao.category.CategoryRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Sort;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -26,6 +28,8 @@ public class CategoryTest {
     CategoryImpl categoryService;
     @Autowired
     CategoryRepository categoryRepository;
+    @Autowired
+    CategoryAdminRepository categoryAdminRepository;
 
     private int parentCategoryId;
     private Integer parentCategoryPid = null;
@@ -39,12 +43,16 @@ public class CategoryTest {
 
     @BeforeEach
     void beforeTest() {
-        categoryRepository.deleteAll();
+        List<CategoryDto.CategoryAllDto> categoryList = categoryAdminRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+
+        for (CategoryDto.CategoryAllDto category : categoryList) {
+            categoryAdminRepository.delete(category);
+        }
 
         CategoryDto.CategoryAllDto newCategory = new CategoryDto.CategoryAllDto();
         newCategory.setPid(this.parentCategoryPid);
         newCategory.setText(this.parentCategoryText);
-        List<CategoryDto.CategoryAllDto> categoryList = categoryService.createCategory(newCategory);
+        categoryList = categoryService.createCategory(newCategory);
 
         parentCategoryId = categoryList.get(0).getId();
     }
