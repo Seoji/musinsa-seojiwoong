@@ -1,6 +1,5 @@
 .gradle
 /build/
-*.jar
 *.class
 *.pid
 .idea/*
