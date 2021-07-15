@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import lombok.AllArgsConstructor;
+import org.musinsa.component.CategorySingleton;
 import org.musinsa.model.dao.category.CategoryAdminRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -12,18 +12,20 @@ import javax.transaction.Transactional;
 
 import org.musinsa.config.exception.ErrorCode;
 import org.musinsa.config.exception.GeneralException;
-import org.musinsa.model.dao.category.CategoryRepository;
 import org.musinsa.model.dto.category.CategoryDto;
 
 
-@AllArgsConstructor
 @Service
 public class CategoryImpl implements ICategory{
-    private CategoryRepository categoryRepository;
     private CategoryAdminRepository categoryAdminRepository;
+    private CategorySingleton categorySingleton;
 
     public  List<CategoryDto.CategoryReadDto> readCategoryByPid(int pid) {
-        List<CategoryDto.CategoryReadDto> categoryList = categoryRepository.findAllByPid(pid);
+        List<CategoryDto.CategoryReadDto> categoryList = categorySingleton
+                .getCategoryList()
+                .stream()
+                .filter(category -> category.getPid() != null && category.getPid() == pid)
+                .collect(Collectors.toList());
 
         if (categoryList.isEmpty()) {
             return categoryList;
@@ -43,7 +45,7 @@ public class CategoryImpl implements ICategory{
     };
 
     public  List<CategoryDto.CategoryReadDto> readCategory() {
-        return categoryRepository.findAll();
+        return categorySingleton.getCategoryList();
     };
 
     public  List<CategoryDto.CategoryAllDto> readCategoryAll() {
